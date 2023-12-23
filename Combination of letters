@@ -1,0 +1,62 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+const char *phoneMap[] = {"", "", "abc", "def", "ghi", "jkl", "mno", "pqrs", "tuv", "wxyz"};
+
+void backtrack(char *combination, char *digits, int index, char **result, int *returnSize) {
+    if (index == strlen(digits)) {
+        combination[index] = '\0';
+        result[(*returnSize)] = malloc((strlen(combination) + 1) * sizeof(char));
+        strcpy(result[(*returnSize)++], combination);
+        return;
+    }
+
+    int digit = digits[index] - '0';
+    const char *letters = phoneMap[digit];
+
+    for (int i = 0; i < strlen(letters); i++) {
+        combination[index] = letters[i];
+        backtrack(combination, digits, index + 1, result, returnSize);
+    }
+}
+
+char **letterCombinations(char *digits, int *returnSize) {
+    int length = strlen(digits);
+    if (length == 0) {
+        *returnSize = 0;
+        return NULL;
+    }
+
+    int totalCombinations = 1;
+    for (int i = 0; i < length; i++) {
+        int digit = digits[i] - '0';
+        totalCombinations *= strlen(phoneMap[digit]);
+    }
+
+    char **result = malloc(totalCombinations * sizeof(char *));
+    char combination[length + 1];
+    *returnSize = 0;
+
+    backtrack(combination, digits, 0, result, returnSize);
+
+    return result;
+}
+
+int main() {
+    char digits[50]; // assuming maximum input length is 50
+    printf("Enter digits: ");
+    scanf("%s", digits);
+
+    int returnSize;
+    char **combinations = letterCombinations(digits, &returnSize);
+
+    printf("Output:\n");
+    for (int i = 0; i < returnSize; i++) {
+        printf("%s\n", combinations[i]);
+        free(combinations[i]);
+    }
+    free(combinations);
+
+    return 0;
+}
